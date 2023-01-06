@@ -1,0 +1,37 @@
+{% include "header.html" %}
+
+  <!-- Page Header -->
+  <header class="masthead" style="background: blue">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="page-heading">
+            <h1>Your Friend Requests</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+{% if request_count == 0  %}
+      <h2 style="text-align: center;">You don't have any friend requests.</h2>
+    {% else %}
+    <h3 style="text-align: center;">You have {{ request_count }} friend requests.</h3><br>
+
+  <div class="container">
+    <div class="row justify-content-md-center">
+
+    {% for request in requests %}
+      <div class="col-5" style="padding-bottom: 10px">
+          <a><img width="150px" height="150px" style="border: 3px solid black; float: left;  border-radius: 50%;  object-fit: cover;" src="{{ url_for('static', filename='img/' + request.user_request.profile_image) }}"></a>
+          <a href="{{ url_for('users_profile', user_id=request.user_request.id) }}"><h2> {{ request.user_request.name }} </h2></a>
+          <a href="{{ url_for('accept_friend', requested_id=request.user_request.id, requested_name=request.user_request.name, request_id=request.id) }}" class="btn btn-outline-success" style="border: 2px solid black;  z-index: 1; margin-left: 10px; color: black;">Accept</a>
+          <a href="{{ url_for('decline_friend', request_id=request.id) }}" class="btn btn-outline-danger" style="border: 2px solid black;  z-index: 1; margin-left: 10px; color: black;">Decline</a>
+      </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+  {% include "footer.html" %}

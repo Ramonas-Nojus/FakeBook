@@ -1,0 +1,64 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,700">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/movie-styles.css') }}">
+
+  <style>
+      p span {
+        font-weight: 900;
+      }
+
+      p {
+        font-size: 20px;
+      }
+
+     .delete-movie a {
+        text-decoration: none;
+         color: black;
+      }
+
+     .delete-button {
+          font-size: 25px;
+          margin: auto;
+          width: 20%;
+          text-align: center;
+          border: 3px solid;
+          padding: 0px;
+     }
+
+      .delete-button:hover {
+          background-color: #777;
+      }
+
+  </style>
+
+{% endblock %}
+
+{% block title %}Movie info{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="heading">Movie info</h1>
+    <img style="width: 250px; border: 3px solid; border-radius: 10px;  float: left; margin-right: 20px" src="{{ movies[0].movie_img_url }}">
+    <p><span>Title:</span> {{ movies[0].movie_title }}</p>
+    <p><span>Rating:</span> {{ movies[0].movie_rating }}</p>
+    <p><span>Overview:</span> {{ movies[0].movie_overview }}</p>
+    <p><span>Release date:</span> {{ movies[0].movie_date }}</p>
+    {% for movie in movies %}
+        {% if current_user.is_authenticated %}
+            {% if current_user.id == movie.user_id %}
+                <div class="delete-movie">
+                    <a href="{{ url_for('delete_movie', movie_id=movie.id, title=movie.movie_title) }}">
+                        <div class="delete-button">Remove Movie<br>From Favourites</div>
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+</div>
+{% endblock %}
