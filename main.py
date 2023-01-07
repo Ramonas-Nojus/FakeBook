@@ -213,7 +213,7 @@ def new_post():
     return render_template("make-post.html", form=form)
 
 
-@app.route("/post/like/<int:post_id>", methods=['GET', 'POST'])
+@app.route("/post/like/<int:post_id>", methods=['GET'])
 def likePost(post_id):
     post = BlogPost.query.get(post_id)
     post.likes += 1
@@ -226,7 +226,7 @@ def likePost(post_id):
     return redirect(url_for('show_post', index=post_id))
 
 
-@app.route("/post/unlike/<int:post_id>", methods=['GET', 'POST'])
+@app.route("/post/unlike/<int:post_id>", methods=['GET'])
 def unlikePost(post_id):
     post = BlogPost.query.get(post_id)
     post.likes -= 1
