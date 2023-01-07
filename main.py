@@ -158,6 +158,11 @@ def get_all_posts():
 def show_post(index):
     form = CommentForm()
     post = BlogPost.query.get(index)
+    is_liked = False
+
+    if len(PostLikes.query.filter_by(liked_post=index, user_id=current_user.id).all()) > 0:
+        is_liked = True
+
     if form.validate_on_submit():
         comment = form.text.data
         author_id = current_user.id
@@ -167,7 +172,7 @@ def show_post(index):
         db.session.add(new_comment)
         db.session.commit()
     comments = Comments.query.filter_by(post_id=index).all()
-    return render_template("post.html", post=post, form=form, comments=comments)
+    return render_template("post.html", post=post, form=form, comments=comments, liked=is_liked)
 
 
 @app.route("/about")
@@ -213,6 +218,12 @@ def likePost(post_id):
     post = BlogPost.query.get(post_id)
     post.likes += 1
     db.session.commit()
+
+    like = PostLikes(liked_post=post_id,
+                     user_id=current_user.id)
+    db.session.add(like)
+    db.session.commit()
+
     return redirect(url_for('show_post', index=post_id))
 
 
