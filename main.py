@@ -161,7 +161,7 @@ def show_post(index):
     is_liked = False
 
     if current_user.is_authenticated:
-        if len(PostLikes.query.filter_by(like   d_post=index, user_id=current_user.id).all()) > 0:
+        if len(PostLikes.query.filter_by(liked_post=index, user_id=current_user.id).all()) > 0:
             is_liked = True
 
     if form.validate_on_submit():
