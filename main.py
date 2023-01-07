@@ -217,11 +217,23 @@ def new_post():
 def likePost(post_id):
     post = BlogPost.query.get(post_id)
     post.likes += 1
-    db.session.commit()
 
     like = PostLikes(liked_post=post_id,
                      user_id=current_user.id)
     db.session.add(like)
+    db.session.commit()
+
+    return redirect(url_for('show_post', index=post_id))
+
+
+@app.route("/post/unlike/<int:post_id>", methods=['GET', 'POST'])
+def unlikePost(post_id):
+    post = BlogPost.query.get(post_id)
+    post.likes -= 1
+
+    like = PostLikes.query.filter_by(liked_post=post_id,
+                                     user_id=current_user.id).first()
+    db.session.delete(like)
     db.session.commit()
 
     return redirect(url_for('show_post', index=post_id))
