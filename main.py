@@ -160,8 +160,9 @@ def show_post(index):
     post = BlogPost.query.get(index)
     is_liked = False
 
-    if len(PostLikes.query.filter_by(liked_post=index, user_id=current_user.id).all()) > 0:
-        is_liked = True
+    if current_user.is_authenticated:
+        if len(PostLikes.query.filter_by(like   d_post=index, user_id=current_user.id).all()) > 0:
+            is_liked = True
 
     if form.validate_on_submit():
         comment = form.text.data
@@ -214,6 +215,7 @@ def new_post():
 
 
 @app.route("/post/like/<int:post_id>", methods=['GET', 'POST'])
+@login_required
 def likePost(post_id):
     post = BlogPost.query.get(post_id)
     post.likes += 1
@@ -227,6 +229,7 @@ def likePost(post_id):
 
 
 @app.route("/post/unlike/<int:post_id>", methods=['GET', 'POST'])
+@login_required
 def unlikePost(post_id):
     post = BlogPost.query.get(post_id)
     post.likes -= 1
