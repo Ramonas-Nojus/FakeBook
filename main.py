@@ -518,6 +518,9 @@ def delete_movie(movie_id, title):
     return redirect(url_for('movie_info', title=title))
 
 
+# ================Friends===========
+
+
 @app.route("/add_friend/<int:user_id>")
 @login_required
 def add_friend(user_id):
@@ -593,6 +596,8 @@ def view_all_friends(user_id):
     all_friends = requested_friends + addressed_friends
 
     return render_template('all_friends.html', friends=all_friends, user=user)
+
+# ==============================
 
 
 if __name__ == "__main__":
