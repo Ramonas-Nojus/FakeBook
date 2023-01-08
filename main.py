@@ -137,6 +137,8 @@ class PostLikes(db.Model):
 
 db.create_all()
 
+# ===================================================================
+
 
 def is_admin(func):
     @wraps(func)
@@ -146,6 +148,18 @@ def is_admin(func):
         else:
             return redirect(url_for('get_all_posts'))
     return decorator
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
+
+# ===========Posts====================
 
 
 @app.route('/')
@@ -174,16 +188,6 @@ def show_post(index):
         db.session.commit()
     comments = Comments.query.filter_by(post_id=index).all()
     return render_template("post.html", post=post, form=form, comments=comments, liked=is_liked)
-
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
-
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
 
 
 @app.route('/new-post', methods=['GET', 'POST'])
@@ -276,6 +280,9 @@ def delete(post_id):
     return redirect(url_for('get_all_posts'))
 
 
+# ===========Authentication====================
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -325,6 +332,9 @@ def logout():
     return redirect(url_for('get_all_posts'))
 
 
+# ===========Profile====================
+
+
 @app.route('/profile')
 @login_required
 def profile():
@@ -364,6 +374,46 @@ def delete_image():
     return redirect(url_for('edit_profile'))
 
 
+@app.route('/user/<int:user_id>')
+def users_profile(user_id):
+    is_friend = False
+    is_request = False
+
+    user = User.query.get(user_id)
+
+    friends_num = len(user.friends) + len(Friends.query.filter_by(addressed_id=user.id).all())
+
+    if current_user.is_authenticated:
+        if user_id == current_user.id:
+            return redirect(url_for('profile'))
+
+        friend_request = FriendRequests.query.filter_by(addressed_id=user_id,
+                                                        requested_id=current_user.id).first()
+
+        if user.id in [user.addressed_id for user in Friends.query.filter_by(addressed_id=user.id, requested_id=current_user.id).all()]\
+                or user.id in [user.requested_id for user in Friends.query.filter_by(requested_id=user.id, addressed_id=current_user.id).all()]\
+                and user_id != current_user.id:
+            is_friend = True
+        else:
+            is_friend = False
+
+        if friend_request:
+            is_request = True
+        else:
+            is_request = False
+
+    print(user.id in [user.addressed_id for user in Friends.query.filter_by(addressed_id=user.id).all()])
+    print(user.id in [user.requested_id for user in Friends.query.filter_by(requested_id=user.id).all()])
+
+    return render_template('profile.html',
+                           user=user,
+                           is_friend=is_friend,
+                           is_request=is_request,
+                           friends_num=friends_num)
+
+# ================Search===================
+
+
 @app.route('/search/<type>', methods=['GET'])
 def search(type):
     key_word = request.args.get("search")
@@ -377,6 +427,8 @@ def search(type):
 
     return render_template('index.html', key_word=key_word, search_results=search_results, search=True, type=type)
 
+
+# ===========Admin===========
 
 @app.route('/admin')
 @is_admin
@@ -408,6 +460,9 @@ def admin_users():
 def admin_comments():
     all_comments = Comments.query.all()
     return render_template('admin/comments.html', comments=all_comments)
+
+
+# ===========Movies===========
 
 
 @app.route('/profile/find_movie', methods=['GET', 'POST'])
@@ -461,44 +516,6 @@ def delete_movie(movie_id, title):
     db.session.delete(movie)
     db.session.commit()
     return redirect(url_for('movie_info', title=title))
-
-
-@app.route('/user/<int:user_id>')
-def users_profile(user_id):
-    is_friend = False
-    is_request = False
-
-    user = User.query.get(user_id)
-
-    friends_num = len(user.friends) + len(Friends.query.filter_by(addressed_id=user.id).all())
-
-    if current_user.is_authenticated:
-        if user_id == current_user.id:
-            return redirect(url_for('profile'))
-
-        friend_request = FriendRequests.query.filter_by(addressed_id=user_id,
-                                                        requested_id=current_user.id).first()
-
-        if user.id in [user.addressed_id for user in Friends.query.filter_by(addressed_id=user.id, requested_id=current_user.id).all()]\
-                or user.id in [user.requested_id for user in Friends.query.filter_by(requested_id=user.id, addressed_id=current_user.id).all()]\
-                and user_id != current_user.id:
-            is_friend = True
-        else:
-            is_friend = False
-
-        if friend_request:
-            is_request = True
-        else:
-            is_request = False
-
-    print(user.id in [user.addressed_id for user in Friends.query.filter_by(addressed_id=user.id).all()])
-    print(user.id in [user.requested_id for user in Friends.query.filter_by(requested_id=user.id).all()])
-
-    return render_template('profile.html',
-                           user=user,
-                           is_friend=is_friend,
-                           is_request=is_request,
-                           friends_num=friends_num)
 
 
 @app.route("/add_friend/<int:user_id>")
