@@ -57,11 +57,6 @@
             <p>Likes: {{ post.likes }}</p>
 <!--           Comments Area -->
         {% if current_user.is_authenticated %}
-
-                {{ ckeditor.load() }}
-
-                {{ ckeditor.config(name='text') }}
-
                 {{ wtf.quick_form(form, novalidate=True) }}
         {% else %}
            <p><a href="{{ url_for('login') }}">Log in</a> to add comments</p>
