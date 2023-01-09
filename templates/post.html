@@ -72,6 +72,7 @@
                     <div class="commenterImage" style="float: left; padding-right: 10px;">
                       <img src="{{ url_for('static', filename='img/' + comment.comment_author.profile_image ) }}" width="50px" height="50px" style="border-radius: 50%;  object-fit: cover;" />
                     </div>
+                  {% if comment.author_id == current_user.id %}
                   <div class="menu-nav">
                     <div class="menu-item"></div>
                     <div class="dropdown-container" tabindex="-1">
@@ -82,6 +83,7 @@
                       </div>
                     </div>
                   </div>
+                  {% endif %}
                     <div class="commentText" style="padding-left: 50px;">
                       <p>{{ comment.text | safe }}</p>
                       <p class="date sub-text" style="color: #B4B4B4; font-size: 15px">{{ comment.comment_author.name }}</p>
