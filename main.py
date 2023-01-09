@@ -186,6 +186,10 @@ def show_post(index):
                                post_id=index)
         db.session.add(new_comment)
         db.session.commit()
+
+    if request.args.get("edit"):
+        print(request.args.get("edit"))
+
     comments = Comments.query.filter_by(post_id=index).all()
     return render_template("post.html", post=post, form=form, comments=comments, liked=is_liked)
 

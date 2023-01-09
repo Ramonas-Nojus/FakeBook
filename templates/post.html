@@ -74,7 +74,7 @@
                       <div class="three-dots"></div>
                       <div class="dropdown">
                         <a href="#"><div>Delete</div></a>
-                        <a href="#"><div>Edit</div></a>
+                        <a href="{{ url_for('show_post', index=post.id, edit=True) }}" ><div>Edit</div></a>
                       </div>
                     </div>
                   </div>
