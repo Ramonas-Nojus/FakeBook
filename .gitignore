@@ -5,3 +5,4 @@ venv library root/
 __pycache__/
 blog.db
 APIs.py
+.idea/
