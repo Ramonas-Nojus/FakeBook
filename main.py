@@ -292,6 +292,14 @@ def delete(post_id):
     return redirect(url_for('get_all_posts'))
 
 
+@app.route("/delete/comment/<post_id>/<comment_id>")
+@login_required
+def delete_comment(comment_id, post_id):
+    comment = Comments.query.get(comment_id)
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect(url_for('show_post', index=post_id))
+
 # ===========Authentication====================
 
 

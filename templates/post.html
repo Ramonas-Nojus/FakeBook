@@ -73,7 +73,7 @@
                     <div class="dropdown-container" tabindex="-1">
                       <div class="three-dots"></div>
                       <div class="dropdown">
-                        <a href="#"><div>Delete</div></a>
+                        <a href="{{url_for('delete_comment', post_id=post.id, comment_id=comment.id)}}"><div>Delete</div></a>
                         <a href="{{ url_for('show_post', index=post.id, edit=comment.id) }}" ><div>Edit</div></a>
                       </div>
                     </div>
