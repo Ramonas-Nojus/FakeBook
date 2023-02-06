@@ -3,7 +3,7 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_ckeditor import CKEditor
 import datetime
-from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, EditProfileForm, AddMovieForm
+from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, EditProfileForm, AddMovieForm, EditCommentForm
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -171,14 +171,27 @@ def get_all_posts():
 @app.route("/post/<int:index>", methods=['GET', 'POST'])
 def show_post(index):
     form = CommentForm()
+    edit_form = EditCommentForm()
+    comment_to_edit_id = 0
     post = BlogPost.query.get(index)
     is_liked = False
+    edit_comment = False
 
     if current_user.is_authenticated:
         if len(PostLikes.query.filter_by(liked_post=index, user_id=current_user.id).all()) > 0:
             is_liked = True
 
-    if form.validate_on_submit():
+    if request.args.get("edit"):
+        comment_to_edit_id = int(request.args.get("edit"))
+        comment_to_edit = Comments.query.get(comment_to_edit_id)
+        edit_form = EditCommentForm(text=comment_to_edit.text)
+        edit_comment = True
+        if edit_form.validate_on_submit() and edit_form.submit.data:
+            comment_to_edit.text = edit_form.text.data
+            db.session.commit()
+            return redirect(url_for('show_post', index=index))
+
+    elif form.validate_on_submit() and form.submit.data:
         comment = form.text.data
         author_id = current_user.id
         new_comment = Comments(text=comment,
@@ -186,8 +199,10 @@ def show_post(index):
                                post_id=index)
         db.session.add(new_comment)
         db.session.commit()
+
     comments = Comments.query.filter_by(post_id=index).all()
-    return render_template("post.html", post=post, form=form, comments=comments, liked=is_liked)
+    return render_template("post.html", post=post, form=form, comments=comments, edit_form=edit_form, liked=is_liked,
+                           edit_comment=edit_comment, edit_comment_id=comment_to_edit_id)
 
 
 @app.route('/new-post', methods=['GET', 'POST'])
@@ -601,4 +616,4 @@ def view_all_friends(user_id):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

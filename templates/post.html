@@ -57,12 +57,7 @@
             <p>Likes: {{ post.likes }}</p>
 <!--           Comments Area -->
         {% if current_user.is_authenticated %}
-
-                {{ ckeditor.load() }}
-
-                {{ ckeditor.config(name='text') }}
-
-                {{ wtf.quick_form(form, novalidate=True) }}
+                {{ wtf.quick_form(form) }}
         {% else %}
            <p><a href="{{ url_for('login') }}">Log in</a> to add comments</p>
         {% endif %}
@@ -72,18 +67,24 @@
                     <div class="commenterImage" style="float: left; padding-right: 10px;">
                       <img src="{{ url_for('static', filename='img/' + comment.comment_author.profile_image ) }}" width="50px" height="50px" style="border-radius: 50%;  object-fit: cover;" />
                     </div>
+                  {% if comment.author_id == current_user.id %}
                   <div class="menu-nav">
                     <div class="menu-item"></div>
                     <div class="dropdown-container" tabindex="-1">
                       <div class="three-dots"></div>
                       <div class="dropdown">
                         <a href="#"><div>Delete</div></a>
-                        <a href="#"><div>Edit</div></a>
+                        <a href="{{ url_for('show_post', index=post.id, edit=comment.id) }}" ><div>Edit</div></a>
                       </div>
                     </div>
                   </div>
+                  {% endif %}
                     <div class="commentText" style="padding-left: 50px;">
-                      <p>{{ comment.text | safe }}</p>
+                        {% if edit_comment and comment.id == edit_comment_id %}
+                         {{ wtf.quick_form(edit_form) }}
+                        {% else %}
+                            <p>{{ comment.text | safe }}</p>
+                        {% endif %}
                       <p class="date sub-text" style="color: #B4B4B4; font-size: 15px">{{ comment.comment_author.name }}</p>
                     </div>
               </ul>
