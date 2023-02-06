@@ -9,10 +9,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 import requests
-
+from APIs import movie_endpoint, movie_img_endpoint, API_KEY, SECRET_KEY
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = SECRET_KEY
 Bootstrap(app)
 ckeditor = CKEditor(app)
 
@@ -20,9 +20,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-movie_endpoint = 'https://api.themoviedb.org/3/search/movie'
-movie_img_endpoint = "https://image.tmdb.org/t/p/w500"
-API_KEY = "cfea93bb49c2265e9f6a16e2cebbbf3e"
 
 login_manager = LoginManager()
 login_manager.init_app(app)
