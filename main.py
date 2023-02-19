@@ -59,6 +59,7 @@ class User(UserMixin, db.Model):
     posts = db.relationship("BlogPost", back_populates="author")
     comments = db.relationship("Comments", back_populates="comment_author")
     movies = db.relationship("Movies", back_populates="movie_user")
+    games = db.relationship("Movies", back_populates="game_user")
     friends = db.relationship("Friends", back_populates="requested_user")
     about = db.Column(db.Text, nullable=True)
     profile_image = db.Column(db.String(100))
@@ -97,6 +98,17 @@ class Movies(db.Model):
 
     def __repr__(self):
         return f"<Movie {self.movie_title}>"
+
+    class Games(db.Model):
+        __tablename__ = "games"
+
+        id = db.Column(db.Integer, primary_key=True)
+        user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+        game_user = db.relationship("User", back_populates="games")
+        game_img_url = db.Column(db.String(1000))
+        game_name = db.Column(db.String(100), nullable=False)
+        game_release_date = db.Column(db.String(250), nullable=False)
+        game_rating = db.Column(db.Float, nullable=True)
 
 
 class Friends(db.Model):
