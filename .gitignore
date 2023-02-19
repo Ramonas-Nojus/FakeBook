@@ -1,8 +1,8 @@
 poetry.lock
 pyproject.toml
 requirements.txt
-venv library root/
-__pycache__/
+venv library root
+__pycache__
 APIs.py
-.idea/
+.idea/workspace.xml
 blog.db
