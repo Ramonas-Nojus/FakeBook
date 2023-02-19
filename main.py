@@ -188,7 +188,7 @@ def show_post(index):
             db.session.commit()
             return redirect(url_for('show_post', index=index))
 
-    elif form.validate_on_submit() and form.submit.data:
+    if form.validate_on_submit() and form.submit.data:
         comment = form.text.data
         author_id = current_user.id
         new_comment = Comments(text=comment,
@@ -196,6 +196,7 @@ def show_post(index):
                                post_id=index)
         db.session.add(new_comment)
         db.session.commit()
+        form.text.data = ''
 
     comments = Comments.query.filter_by(post_id=index).all()
     return render_template("post.html", post=post, form=form, comments=comments, edit_form=edit_form, liked=is_liked,
